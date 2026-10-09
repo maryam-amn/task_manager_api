@@ -11,7 +11,7 @@ the project is a task manager API built with Ruby on Rails. It enables users to 
 ### Initial set up
 - Run the command below
 ```bash
-rails db:prepare db:create db:migrate db:fixtures:load
+ bundle install && bin/rails db:prepare db:create db:migrate db:fixtures:load
 ```
 - it will
     - prepare and create the database
