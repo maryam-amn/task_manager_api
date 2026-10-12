@@ -31,3 +31,12 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ignore RubyMine
+/.idea
+/*.iml
+
+# Ignore Visual Studio Code
+.vscode/
+
+# Ignore Node Module
+/node_modules
