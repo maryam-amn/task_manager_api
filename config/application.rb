@@ -28,5 +28,13 @@ module TaskManagerApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    # we use it overridden if params[:_method] is set. This is the middleware which supports the PUT and DELETE HTTP method types.
+    config.middleware.use Rack::MethodOverride
+    # we use it to do/display notices and alerts
+    config.middleware.use ActionDispatch::Flash
+    # we use it to be able to use cookies, to write (the data is sent in the HTTP response header) and read (the data is read from HTTP request header) the cookies
+    config.middleware.use ActionDispatch::Cookies
+    # we use it to encrypted the cookies with the secrey_key_base and it can't be altered or read by users
+    config.middleware.use ActionDispatch::Session::CookieStore
   end
 end
