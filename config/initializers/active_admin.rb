@@ -122,25 +122,25 @@ ActiveAdmin.setup do |config|
   # Default:
   config.logout_link_path = :destroy_user_session_path
 
-  # This setting changes the http method used when rendering the
-  # link. For example :get, :delete, :put, etc..
-  #
-  # Default:
-  # config.logout_link_method = :get
+   # This setting changes the http method used when rendering the
+   # link. For example :get, :delete, :put, etc..
+   #
+   # Default:
+   # config.logout_link_method = :get
 
-  # == Root
-  #
-  # Set the action to call for the root path. You can set different
-  # roots for each namespace.
-  #
-  # Default:
-  # config.root_to = 'dashboard#index'
+   # == Root
+   #
+   # Set the action to call for the root path. You can set different
+   # roots for each namespace.
+   #
+   # Default:
+   # config.root_to = 'dashboard#index'
 
-  # == Admin Comments
-  #
-  # This allows your users to comment on any resource registered with Active Admin.
-  #
-  # You can completely disable comments:
+   # == Admin Comments
+   #
+   # This allows your users to comment on any resource registered with Active Admin.
+   #
+   # You can completely disable comments:
    config.comments = false
   #
   # You can change the name under which comments are registered:
@@ -174,7 +174,7 @@ ActiveAdmin.setup do |config|
   # You can exclude possibly sensitive model attributes from being displayed,
   # added to forms, or exported by default by ActiveAdmin
   #
-  config.filter_attributes = [:encrypted_password, :password, :password_confirmation]
+  config.filter_attributes = [ :encrypted_password, :password, :password_confirmation ]
 
   # == Localize Date/Time Format
   #
