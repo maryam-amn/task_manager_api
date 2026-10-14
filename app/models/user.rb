@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
 
-  validates :username, presence: true, uniqueness: true , length: { minimum: 4 }
+  validates :username, presence: true, uniqueness: true, length: { minimum: 4 }
   validates :password, length: { minimum: 6 }, presence: true
 
   def self.ransackable_attributes(auth_object = nil)
