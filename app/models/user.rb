@@ -4,8 +4,11 @@ class User < ApplicationRecord
   devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
 
+  validates :username, presence: true, uniqueness: true, length: { minimum: 4 }
+  validates :password, length: { minimum: 6 }, presence: true
+
   def self.ransackable_attributes(auth_object = nil)
-    %w[id email created_at updated_at]
+    %w[id username email created_at updated_at]
   end
 
   def self.ransackable_associations(auth_object = nil)
