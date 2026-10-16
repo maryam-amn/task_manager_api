@@ -1,0 +1,9 @@
+consultation:
+  user_id: 825650670
+  title: "Se présenter aux consultations"
+  description: "Rattraper les 8h de consultation de la semaine dernière."
+
+blood_test:
+  user_id: 825650671
+  title: "Faire la prise de sang à Mme Thomson au labo"
+  description: "Chambre 706, puis l'envoyer au labo "
