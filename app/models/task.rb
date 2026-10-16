@@ -6,6 +6,8 @@ class Task < ApplicationRecord
 
   enum :status, %w[ draft in_progress done archived ].index_by(&:itself)
 
+  delegate :username, to: :user
+
   def self.ransackable_associations(auth_object = nil)
     %w[id user_id title description status created_at updated_at]
   end
