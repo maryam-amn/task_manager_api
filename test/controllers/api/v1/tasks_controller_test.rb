@@ -36,4 +36,27 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal expected_error_message, response.parsed_body[:error]
   end
+
+  test "Should be able to delete a task" do
+    task = tasks(:blood_test)
+
+    assert_difference -> { Task.count } => -1 do
+      delete api_v1_task_url(id: task.id)
+    end
+
+    assert_response :ok
+
+    assert_equal response.parsed_body[:message], I18n.t("task.api.status.successfully_destroyed")
+  end
+
+  test "Should render a error message if we try to delete a nonexistant task" do
+    assert_difference -> { Task.count } => 0 do
+      delete api_v1_task_url(id: 0)
+    end
+
+    assert_response :not_found
+    expected_error_message = I18n.t("task.api.status.not_found")
+
+    assert_equal expected_error_message, response.parsed_body[:error]
+  end
 end
