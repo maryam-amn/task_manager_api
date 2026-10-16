@@ -10,17 +10,17 @@ class TaskTest < ActiveSupport::TestCase
     assert task.valid?
   end
 
-  test "shouldn' be able to create task without a title" do
-    task =  Task.new(user_id: @user.id,  description: "Rechercher des traces de moisissures.", status: "draft")
+  test "shouldn't be able to create task without a title" do
+    task =  Task.new(user_id: @user.id, description: "Rechercher des traces de moisissures.", status: "draft")
     assert_not task.valid?
   end
 
-  test "shouldn' be able to create task without a description " do
+  test "shouldn't be able to create task without a description " do
     task = Task.new(user_id: @user.id, title: "Faire le test pour la chorée de huntington", status: "archived")
     assert_not task.valid?
   end
 
-  test "shouldn' be able to create task without a user" do
+  test "shouldn't be able to create task without a user" do
     task = Task.new(title: "Faire la prise de sang à Mme Thomson au labo", description: "Chambre 706, puis l'envoyer au labo", status: "draft")
     assert_not task.valid?
   end

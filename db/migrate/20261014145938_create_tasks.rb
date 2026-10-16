@@ -3,7 +3,6 @@ class CreateTasks < ActiveRecord::Migration[8.1]
     create_enum :status, %w[ draft in_progress done archived ]
 
     create_table :tasks do |t|
-      t.integer :user_id, references: :users, null: false, foreign_key: true
       t.references :user, null: false, foreign_key: true
       t.string :title, null: false
       t.text :description, null: false

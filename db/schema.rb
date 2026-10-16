@@ -19,12 +19,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_145938) do
   create_enum "status", ["draft", "in_progress", "done", "archived"]
 
   create_table "tasks", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "title", null: false
     t.text "description", null: false
     t.enum "status", default: "draft", enum_type: "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,4 +41,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_145938) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  add_foreign_key "tasks", "users"
 end
