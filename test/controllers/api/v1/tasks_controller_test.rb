@@ -14,4 +14,26 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.parsed_body["tasks"], tasks_to_json.as_json
     assert_equal Task.count, response.parsed_body["tasks"].count
   end
+
+  test "Should render a task if we can find the task's ID" do
+    task = tasks(:blood_test)
+
+    get api_v1_task_url(task.id)
+
+    assert_response :success
+
+    expected_response = TaskJson.new(task:).to_h
+
+    assert_equal expected_response.as_json, response.parsed_body
+  end
+
+  test "Should render an error message if we cannot find the task's ID" do
+    get api_v1_task_url(id: 0)
+
+    assert_response :not_found
+
+    expected_error_message = I18n.t("task.api.status.not_found")
+
+    assert_equal expected_error_message, response.parsed_body[:error]
+  end
 end
