@@ -1,5 +1,5 @@
 class Api::V1::TasksController < ApiController
-  before_action :find_task, only: [ :show, :destroy ]
+  before_action :find_task, only: [ :show, :destroy, :update ]
   def index
     task_to_json = Task.includes(:user).map do |task|
       TaskJson.new(task:).to_h
@@ -21,9 +21,18 @@ class Api::V1::TasksController < ApiController
     if task.save
       render json: TaskJson.new(task:).to_h, status: :created
     else
-      render status: :unprocessable_entity, json: { error: I18n.t("task.api.status.record_invalid"), details: { field:  task.errors } }
+      render status: :unprocessable_entity, json: { error: I18n.t("task.api.status.create.record_invalid"), details: { field:  task.errors } }
     end
   end
+
+  def update
+    if @task.update(task_params)
+      render json: TaskJson.new(task: @task).to_h, status: :ok
+    else
+      render status: :unprocessable_entity, json: { error: I18n.t("task.api.status.update.record_invalid"), details: { field:  @task.errors } }
+    end
+  end
+
 
   private
   def find_task

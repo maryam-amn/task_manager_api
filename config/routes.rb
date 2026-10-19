@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :tasks, only: %i[index show destroy create]
+      resources :tasks
     end
   end
 end
