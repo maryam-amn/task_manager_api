@@ -46,7 +46,7 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :ok
 
-    assert_equal response.parsed_body[:message], I18n.t("task.api.status.successfully_destroyed")
+    assert_equal I18n.t("task.api.status.successfully_destroyed"), response.parsed_body[:message]
   end
 
   test "Should render a error message if we try to delete a nonexistant task" do
