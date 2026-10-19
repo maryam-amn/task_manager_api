@@ -141,4 +141,163 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes response.parsed_body[:details][:field][:status], expected_response[:description]
   end
+
+  test "Should be able to update a task using PATCH request" do
+    task = tasks(:consultation)
+    patch api_v1_task_url(id: task.id), params: {
+                                     title: "Faire la prise de sang à Mme Thomson",
+                                     description: "Chambre 304, puis l'envoyer au labo", status: "done" }
+
+    assert_response :ok
+    task.reload
+
+    expected_response = TaskJson.new(task:).to_h.as_json
+    assert_equal expected_response, response.parsed_body
+  end
+
+
+  test "Should be able to update a task using PUT request" do
+    task = tasks(:consultation)
+    put api_v1_task_url(id: task.id), params: { user_id: users(:charlotte).id, title: "Faire la prise de sang à Mme Thomson", description: "Chambre 304, puis l'envoyer au labo", status: "done" }
+
+    assert_response :ok
+    task.reload
+
+    expected_response = TaskJson.new(task:).to_h.as_json
+    assert_equal expected_response, response.parsed_body
+  end
+
+  test "Should render an error message if we try to update a task that doesn't exist using PATCH request" do
+    patch api_v1_task_url(id: 0), params: { description: "Chambre 706, puis l'envoyer", status: "in_progress" }
+
+    assert_response :not_found
+
+    expected_error_message = I18n.t("task.api.status.not_found")
+
+    assert_equal expected_error_message, response.parsed_body[:error]
+  end
+
+  test "Should render an error message if we try to update a task that doesn't exist' using PUT request" do
+    put api_v1_task_url(id: 0), params: { user_id: users(:admin_user), title: "Faire la prise de sang à Mme Thomson au labo", description: "Chambre 706, puis l'envoyer", status: "in_progress" }
+
+    assert_response :not_found
+
+    expected_error_message = I18n.t("task.api.status.not_found")
+
+    assert_equal expected_error_message, response.parsed_body[:error]
+  end
+
+
+  test "Shouldn't be able to update a task  if the user doesn't exist using PATCH request" do
+    task = tasks(:consultation)
+    patch api_v1_task_url(id: task.id), params: { user_id: 0, description: "Chambre 706, puis l'envoyer", status: "in_progress" }
+
+    expected_message = { "user" => [ "must exist" ] }
+
+    assert_equal expected_message, response.parsed_body[:details][:field]
+  end
+
+  test "Shouldn't be able to update a task  if the user doesn't exist using PUT request" do
+    task = tasks(:consultation)
+    put api_v1_task_url(id: task.id), params: { user_id: 0, title: "Faire la prise de sang à Mme Thomson au labo", description: "Chambre 706, puis l'envoyer", status: "in_progress" }
+
+    expected_message = { "user" => [ "must exist" ] }
+
+    assert_equal expected_message, response.parsed_body[:details][:field]
+  end
+
+
+
+  test "Shouldn't be able to update a task when the title is too short using PATCH request" do
+    patch api_v1_task_url(id: tasks(:consultation).id), params: { title: "La",
+      description: "Chambre 706, puis l'envoyer", status: "in_progress" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "is too short (minimum is 5 characters)" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to update a task when the title is too short using PUT request" do
+    put api_v1_task_url(id: tasks(:consultation).id), params: { user_id: users(:admin_user).id, title: "La", description: "Chambre 706, puis l'envoyer au labo", status: "in_progress" }
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "is too short (minimum is 5 characters)" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to update a task when the title blank using PATCH request" do
+    patch api_v1_task_url(id: tasks(:consultation).id), params: { title: "", description: "Chambre 706, puis l'envoyer au labo", status: "in_progress" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "can't be blank" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to update a task when the title blank using PUT request" do
+    put api_v1_task_url(id: tasks(:consultation).id), params: { user_id: users(:admin_user).id, title: "", description: "Chambre 706, puis l'envoyer au labo", status: "in_progress" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "can't be blank" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to update a task when the description is too short using PATCH request" do
+    patch api_v1_task_url(id: tasks(:consultation).id), params: { description: "test", status: "in_progress" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "is too short (minimum is 5 characters)" }
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to update a task when the description is too short using PUT request" do
+    put api_v1_task_url(id: tasks(:consultation).id), params: {  user_id: users(:admin_user).id, description: "test", title: "Faire la prise de sang à Mme Thomson au labo", status: "in_progress" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "is too short (minimum is 5 characters)" }
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to update a task when the description is blank using PATCH request" do
+    patch api_v1_task_url(id: tasks(:consultation).id), params: { description: "", status: "in_progress" }
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "can't be blank" }
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to update a task when the description is blank using PUT request" do
+    put api_v1_task_url(id: tasks(:consultation).id), params: { user_id: users(:admin_user).id, description: "", status: "in_progress" }
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "can't be blank" }
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to update a task when the status doesn't exist in the list using PATCH request" do
+    patch api_v1_task_url(id: tasks(:consultation).id), params: { title: "Faire la prise de sang à Mme Thomson",
+                                                                  status: "to do" }
+    assert_response :unprocessable_entity
+
+    expected_response = { status: "is not included in the list" }
+    assert_includes response.parsed_body[:details][:field][:status], expected_response[:status]
+  end
+
+  test "Shouldn't be able to update a task when the status doesn't exist in the list using PUT request" do
+    put api_v1_task_url(id: tasks(:consultation).id), params: {  user_id: users(:charlotte).id, title: "Faire la prise de sang à Mme Thomson", description: "Chambre 706, puis l'envoyer au labo",
+    status: "to do" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { status: "is not included in the list" }
+    assert_includes response.parsed_body[:details][:field][:status], expected_response[:status]
+  end
 end
