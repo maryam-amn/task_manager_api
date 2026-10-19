@@ -10,6 +10,13 @@ class TaskTest < ActiveSupport::TestCase
     assert task.valid?
   end
 
+  test "should reject an invalid status" do
+    task = Task.new(user_id: @user.id, title: "Remplacer la vicodin", description: "Voir avec le pharmacien.", status: "drafst")
+
+    assert_not task.valid?
+    assert task.errors.of_kind?(:status, :inclusion)
+  end
+
   test "shouldn't be able to create task without a title" do
     task =  Task.new(user_id: @user.id, description: "Rechercher des traces de moisissures.", status: "draft")
     assert_not task.valid?

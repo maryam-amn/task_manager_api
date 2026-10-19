@@ -1,6 +1,5 @@
 class Api::V1::TasksController < ApiController
   before_action :find_task, only: [ :show, :destroy ]
-
   def index
     task_to_json = Task.includes(:user).map do |task|
       TaskJson.new(task:).to_h
@@ -17,10 +16,23 @@ class Api::V1::TasksController < ApiController
     render status: :ok, json: { message: I18n.t("task.api.status.successfully_destroyed") }
   end
 
+  def create
+    task = Task.new(task_params)
+    if task.save
+      render json: TaskJson.new(task:).to_h, status: :created
+    else
+      render status: :unprocessable_entity, json: { error: I18n.t("task.api.status.record_invalid"), details: { field:  task.errors } }
+    end
+  end
+
   private
   def find_task
     @task = Task.find(params[:id])
   rescue ActiveRecord::RecordNotFound => e
    render status: :not_found, json: { error: I18n.t("task.api.status.not_found"), details: { field: [ e ] } }
+  end
+
+  def task_params
+    params.permit([ :user_id, :status, :title, :description ])
   end
 end
