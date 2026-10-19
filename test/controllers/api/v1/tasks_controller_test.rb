@@ -59,4 +59,75 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal expected_error_message, response.parsed_body[:error]
   end
+
+  test "Should create a new task" do
+    assert_difference  -> { Task.count }, +1  do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                    title: "Faire la prise de sang à Mme Thomson au labo",
+                                    description: "Chambre 706, puis l'envoyer au labo", status: "draft" }
+    end
+    assert_response :created
+
+    task = Task.last
+    task_json = TaskJson.new(task:).to_h
+    assert_equal response.parsed_body, task_json.as_json
+  end
+
+  test "shouldn't be able to create a new task if the user doesn't exist" do
+    post api_v1_tasks_url, params: { user_id: 0,
+                                    title: "Faire la prise de sang à Mme Thomson au labo",
+                                    description: "Chambre 706, puis l'envoyer au labo", status: "draft" }
+
+    assert_response :unprocessable_entity
+
+    expected_message = { "user" => [ "must exist" ] }
+
+    assert_equal expected_message, response.parsed_body[:details][:field]
+  end
+
+  test "Shouldn't be able to create a new task without a title" do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                    description: "Chambre 706, puis l'envoyer au labo", status: "draft" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "can't be blank" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to create a new task when the title is short" do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                    title: "la",
+                                    description: "Chambre 706, puis l'envoyer au labo", status: "draft" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { title: "is too short (minimum is 5 characters)" }
+
+    assert_includes response.parsed_body[:details][:field][:title], expected_response[:title]
+  end
+
+  test "Shouldn't be able to create a new task without a description" do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                    title: "Faire la prise de sang à Mme Thomson au labo", status: "draft" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "can't be blank" }
+
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to create a new task when the description is short" do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                    title: "Faire la prise de sang à Mme Thomson au labo",
+                                    description: "706", status: "draft" }
+
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "is too short (minimum is 5 characters)" }
+
+    assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
 end

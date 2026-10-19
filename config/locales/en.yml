@@ -5,4 +5,5 @@ en:
       status:
         not_found: "The task wasn't found"
         successfully_destroyed: "Task successfully deleted"
+        record_invalid: "The task can't be created"
 
