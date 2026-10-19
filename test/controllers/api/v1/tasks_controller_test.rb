@@ -140,6 +140,5 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
     expected_response = { description: "is not included in the list" }
 
     assert_includes response.parsed_body[:details][:field][:status], expected_response[:description]
-
   end
 end
