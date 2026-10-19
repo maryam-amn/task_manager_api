@@ -1,5 +1,5 @@
 class Api::V1::TasksController < ApiController
-  before_action :find_task, only: [ :show ]
+  before_action :find_task, only: [ :show, :destroy ]
 
   def index
     task_to_json = Task.includes(:user).map do |task|
@@ -10,6 +10,11 @@ class Api::V1::TasksController < ApiController
 
   def show
     render json: TaskJson.new(task: @task).to_h
+  end
+
+  def destroy
+    @task.destroy
+    render status: :ok, json: { message: I18n.t("task.api.status.successfully_destroyed") }
   end
 
   private

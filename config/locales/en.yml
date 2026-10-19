@@ -4,4 +4,5 @@ en:
     api:
       status:
         not_found: "The task wasn't found"
+        successfully_destroyed: "Task successfully deleted"
 
