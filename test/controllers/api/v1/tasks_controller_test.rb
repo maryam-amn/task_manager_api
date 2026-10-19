@@ -61,7 +61,7 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "Should create a new task" do
-    assert_difference  -> { Task.count }, +1  do
+    assert_difference -> { Task.count }, +1  do
     post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
                                     title: "Faire la prise de sang à Mme Thomson au labo",
                                     description: "Chambre 706, puis l'envoyer au labo", status: "draft" }
@@ -129,5 +129,17 @@ class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
     expected_response = { description: "is too short (minimum is 5 characters)" }
 
     assert_includes response.parsed_body[:details][:field][:description], expected_response[:description]
+  end
+
+  test "Shouldn't be able to create a new task when the status doesn't exist" do
+    post api_v1_tasks_url, params: { user_id: users(:admin_user).id,
+                                     title: "Faire la prise de sang à Mme Thomson au labo",
+                                     description: "Chambre 706, puis l'envoyer au labo", status: "drafdt" }
+    assert_response :unprocessable_entity
+
+    expected_response = { description: "is not included in the list" }
+
+    assert_includes response.parsed_body[:details][:field][:status], expected_response[:description]
+
   end
 end

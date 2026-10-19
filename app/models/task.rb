@@ -4,7 +4,7 @@ class Task < ApplicationRecord
   validates :title, presence: true, length: { minimum: 5 }
   validates :description, presence: true, length: { minimum: 5 }
 
-  enum :status, %w[ draft in_progress done archived ].index_by(&:itself)
+  enum :status, %w[ draft in_progress done archived ].index_by(&:itself), default: :draft, validate: true
 
   delegate :username, to: :user
 
